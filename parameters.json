@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sites_appgatway_webapp_name": {
+            "value": null
+        },
+        "sites_appgatway_webapp2_name": {
+            "value": null
+        },
+        "virtualNetworks_appgateway_rg_name": {
+            "value": null
+        },
+        "config_web_name": {
+            "value": null
+        },
+        "applicationGateways_appgateway_name": {
+            "value": null
+        },
+        "config_web_name_1": {
+            "value": null
+        },
+        "publicIPAddresses_appgateway_ip_name": {
+            "value": null
+        },
+        "publicIPAddresses_appgateway_pip_name": {
+            "value": null
+        },
+        "serverfarms_ServicePlan49907269_b770_name": {
+            "value": null
+        },
+        "subnets_default_name": {
+            "value": null
+        },
+        "hostNameBindings_appgatway_webapp.azurewebsites.net_name": {
+            "value": null
+        },
+        "hostNameBindings_appgatway_webapp2.azurewebsites.net_name": {
+            "value": null
+        },
+        "applicationGateways_appgateway_id": {
+            "value": null
+        },
+        "applicationGateways_appgateway_id_1": {
+            "value": null
+        },
+        "applicationGateways_appgateway_id_2": {
+            "value": null
+        },
+        "applicationGateways_appgateway_id_3": {
+            "value": null
+        },
+        "applicationGateways_appgateway_id_4": {
+            "value": null
+        },
+        "applicationGateways_appgateway_id_5": {
+            "value": null
+        }
+    }
+}
