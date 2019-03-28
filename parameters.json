@@ -2,59 +2,56 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "sites_appgatway_webapp_name": {
-            "value": null
-        },
-        "sites_appgatway_webapp2_name": {
-            "value": null
-        },
-        "virtualNetworks_appgateway_rg_name": {
-            "value": null
-        },
-        "config_web_name": {
-            "value": null
-        },
-        "applicationGateways_appgateway_name": {
-            "value": null
-        },
-        "config_web_name_1": {
-            "value": null
-        },
-        "publicIPAddresses_appgateway_ip_name": {
-            "value": null
-        },
-        "publicIPAddresses_appgateway_pip_name": {
-            "value": null
-        },
-        "serverfarms_ServicePlan49907269_b770_name": {
-            "value": null
-        },
-        "subnets_default_name": {
-            "value": null
-        },
-        "hostNameBindings_appgatway_webapp.azurewebsites.net_name": {
-            "value": null
-        },
-        "hostNameBindings_appgatway_webapp2.azurewebsites.net_name": {
-            "value": null
-        },
-        "applicationGateways_appgateway_id": {
-            "value": null
-        },
-        "applicationGateways_appgateway_id_1": {
-            "value": null
-        },
-        "applicationGateways_appgateway_id_2": {
-            "value": null
-        },
-        "applicationGateways_appgateway_id_3": {
-            "value": null
-        },
-        "applicationGateways_appgateway_id_4": {
-            "value": null
-        },
-        "applicationGateways_appgateway_id_5": {
-            "value": null
-        }
+      "addressPrefix": {
+        "value": "10.0.0.0/16"
+      },
+      "subnetPrefix": {
+        "value": "10.0.0.0/28"
+      },
+      "applicationGatewaySize": {
+        "value": "Standard_Medium"
+      },
+      "capacity": {
+        "value": 2
+      },
+      "app1Name":{
+        "value":"app1secure"
+      },
+      "app2Name":{
+        "value":"app2secure"
+      },
+      "azureWebApp1": {
+        "value": "app1secure.azurewebsites.net"
+      },
+      "azureWebApp2": {
+        "value": "app2secure.azurewebsites.net"
+      },
+      "probeEnabled": {
+        "value": true
+      },
+      "hostingPlanName": {
+        "value": "secureappplan"
+      },
+      "hostingEnvironment": {
+          "value": ""
+      },
+      "location": {
+          "value": "West Europe"
+      },
+      "sku": {
+          "value": "Standard"
+      },
+      "skuCode": {
+          "value": "S1"
+      },
+      "workerSize": {
+          "value": "0"
+      },
+      "serverFarmResourceGroup": {
+          "value": "secure-webapp-gateway-rg"
+      },
+      "subscriptionId": {
+          "value": "19ad0156-1e20-4d4a-9d63-fae6c20f63bd"
+      }      
     }
-}
+  }
