@@ -58,14 +58,14 @@
       "metadata": {
         "description": "URL of Azure Web App 2"
       }
-    },   
-    "app1Name":{
+    },
+    "app1Name": {
       "type": "string",
       "metadata": {
         "description": "App 1 name"
       }
     },
-    "app2Name":{
+    "app2Name": {
       "type": "string",
       "metadata": {
         "description": "App 2 name"
@@ -127,34 +127,50 @@
       }
     },
     {
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "Tier": "[parameters('sku')]",
+        "Name": "[parameters('skuCode')]"
+      },
+      "name": "[parameters('hostingPlanName')]",
+      "apiVersion": "2016-09-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "name": "[parameters('hostingPlanName')]",
+        "workerSizeId": "[parameters('workerSize')]",
+        "numberOfWorkers": "1",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
+      }
+    },
+    {
       "type": "Microsoft.Web/sites",
       "name": "[parameters('app1Name')]",
       "apiVersion": "2016-03-01",
       "location": "[parameters('location')]",
       "properties": {
-          "siteConfig": {
-              "appSettings": [
-                  {
-                      "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[reference('microsoft.insights/components/app1secure', '2015-05-01').InstrumentationKey]"
-                  },
-                  {
-                      "name": "XDT_MicrosoftApplicationInsights_Mode",
-                      "value": "default"
-                  },
-                  {
-                      "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-                      "value": "~2"
-                  }
-              ]
-          },
-          "name": "[parameters('app1Name')]",
-          "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-          "hostingEnvironment": "[parameters('hostingEnvironment')]"
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference('microsoft.insights/components/app1secure', '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_Mode",
+              "value": "default"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "~2"
+            }
+          ]
+        },
+        "name": "[parameters('app1Name')]",
+        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
       },
       "dependsOn": [
-          "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-          "[concat('microsoft.insights/components/', parameters('app1Name'))]"
+        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "[concat('microsoft.insights/components/', parameters('app1Name'))]"
       ]
     },
     {
@@ -163,56 +179,40 @@
       "apiVersion": "2016-03-01",
       "location": "[parameters('location')]",
       "properties": {
-          "siteConfig": {
-              "appSettings": [
-                  {
-                      "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[reference('microsoft.insights/components/app2secure', '2015-05-01').InstrumentationKey]"
-                  },
-                  {
-                      "name": "XDT_MicrosoftApplicationInsights_Mode",
-                      "value": "default"
-                  },
-                  {
-                      "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-                      "value": "~2"
-                  }
-              ]
-          },
-          "name": "[parameters('app2Name')]",
-          "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-          "hostingEnvironment": "[parameters('hostingEnvironment')]"
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference('microsoft.insights/components/app2secure', '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_Mode",
+              "value": "default"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "~2"
+            }
+          ]
+        },
+        "name": "[parameters('app2Name')]",
+        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
       },
       "dependsOn": [
-          "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-          "[concat('microsoft.insights/components/', parameters('app2Name'))]"
+        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "[concat('microsoft.insights/components/', parameters('app2Name'))]"
       ]
-  },
-    {
-      "type": "Microsoft.Web/serverfarms",
-      "sku": {
-          "Tier": "[parameters('sku')]",
-          "Name": "[parameters('skuCode')]"
-      },
-      "name": "[parameters('hostingPlanName')]",
-      "apiVersion": "2016-09-01",
-      "location": "[parameters('location')]",
-      "properties": {
-          "name": "[parameters('hostingPlanName')]",
-          "workerSizeId": "[parameters('workerSize')]",
-          "numberOfWorkers": "1",
-          "hostingEnvironment": "[parameters('hostingEnvironment')]"
-      }
     },
     {
-        "type": "microsoft.insights/components",
-        "name": "app1secure",
-        "apiVersion": "2015-05-01",
-        "location": "West Europe",
-        "properties": {
-            "ApplicationId": "[parameters('app1Name')]",
-            "Request_Source": "IbizaWebAppExtensionCreate"
-        }
+      "type": "microsoft.insights/components",
+      "name": "app1secure",
+      "apiVersion": "2015-05-01",
+      "location": "West Europe",
+      "properties": {
+        "ApplicationId": "[parameters('app1Name')]",
+        "Request_Source": "IbizaWebAppExtensionCreate"
+      }
     },
     {
       "type": "microsoft.insights/components",
@@ -220,8 +220,8 @@
       "apiVersion": "2015-05-01",
       "location": "West Europe",
       "properties": {
-          "ApplicationId": "[parameters('app2Name')]",
-          "Request_Source": "IbizaWebAppExtensionCreate"
+        "ApplicationId": "[parameters('app2Name')]",
+        "Request_Source": "IbizaWebAppExtensionCreate"
       }
     },
     {
