@@ -58,14 +58,14 @@
       "metadata": {
         "description": "URL of Azure Web App 2"
       }
-    },   
-    "app1Name":{
+    },
+    "app1Name": {
       "type": "string",
       "metadata": {
         "description": "App 1 name"
       }
     },
-    "app2Name":{
+    "app2Name": {
       "type": "string",
       "metadata": {
         "description": "App 2 name"
@@ -105,16 +105,27 @@
     },
     "subscriptionId": {
       "type": "string"
-    }
+    },
+    "vpngatewaypip_name": {
+      "type": "string"
+    },
+    "publicIPAddresses_vpngatewaypip_name": {
+      "defaultValue": "vpngatewaypip",
+      "type": "String"
+  }
   },
   "variables": {
     "applicationGatewayName": "applicationGateway1",
     "publicIPAddressName": "publicIp1",
     "virtualNetworkName": "virtualNetwork1",
     "subnetName": "appGatewaySubnet",
+    "vpnGatewaySubnetName":"GatewaySubnet",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
-    "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',variables('applicationGatewayName'))]"
+    "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',variables('applicationGatewayName'))]",
+    "virtualNetworkGateways_secureappgateway_name": "",
+    "publicIPAddresses_vpngatewaypip_externalid": "",
+    "virtualNetworks_virtualNetwork1_externalid": ""
   },
   "resources": [
     {
@@ -132,29 +143,29 @@
       "apiVersion": "2016-03-01",
       "location": "[parameters('location')]",
       "properties": {
-          "siteConfig": {
-              "appSettings": [
-                  {
-                      "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[reference('microsoft.insights/components/app1secure', '2015-05-01').InstrumentationKey]"
-                  },
-                  {
-                      "name": "XDT_MicrosoftApplicationInsights_Mode",
-                      "value": "default"
-                  },
-                  {
-                      "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-                      "value": "~2"
-                  }
-              ]
-          },
-          "name": "[parameters('app1Name')]",
-          "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-          "hostingEnvironment": "[parameters('hostingEnvironment')]"
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference('microsoft.insights/components/app1secure', '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_Mode",
+              "value": "default"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "~2"
+            }
+          ]
+        },
+        "name": "[parameters('app1Name')]",
+        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
       },
       "dependsOn": [
-          "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-          "[concat('microsoft.insights/components/', parameters('app1Name'))]"
+        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "[concat('microsoft.insights/components/', parameters('app1Name'))]"
       ]
     },
     {
@@ -163,56 +174,56 @@
       "apiVersion": "2016-03-01",
       "location": "[parameters('location')]",
       "properties": {
-          "siteConfig": {
-              "appSettings": [
-                  {
-                      "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[reference('microsoft.insights/components/app2secure', '2015-05-01').InstrumentationKey]"
-                  },
-                  {
-                      "name": "XDT_MicrosoftApplicationInsights_Mode",
-                      "value": "default"
-                  },
-                  {
-                      "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-                      "value": "~2"
-                  }
-              ]
-          },
-          "name": "[parameters('app2Name')]",
-          "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-          "hostingEnvironment": "[parameters('hostingEnvironment')]"
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference('microsoft.insights/components/app2secure', '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_Mode",
+              "value": "default"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "~2"
+            }
+          ]
+        },
+        "name": "[parameters('app2Name')]",
+        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
       },
       "dependsOn": [
-          "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-          "[concat('microsoft.insights/components/', parameters('app2Name'))]"
+        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "[concat('microsoft.insights/components/', parameters('app2Name'))]"
       ]
-  },
+    },
     {
       "type": "Microsoft.Web/serverfarms",
       "sku": {
-          "Tier": "[parameters('sku')]",
-          "Name": "[parameters('skuCode')]"
+        "Tier": "[parameters('sku')]",
+        "Name": "[parameters('skuCode')]"
       },
       "name": "[parameters('hostingPlanName')]",
       "apiVersion": "2016-09-01",
       "location": "[parameters('location')]",
       "properties": {
-          "name": "[parameters('hostingPlanName')]",
-          "workerSizeId": "[parameters('workerSize')]",
-          "numberOfWorkers": "1",
-          "hostingEnvironment": "[parameters('hostingEnvironment')]"
+        "name": "[parameters('hostingPlanName')]",
+        "workerSizeId": "[parameters('workerSize')]",
+        "numberOfWorkers": "1",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
       }
     },
     {
-        "type": "microsoft.insights/components",
-        "name": "app1secure",
-        "apiVersion": "2015-05-01",
-        "location": "West Europe",
-        "properties": {
-            "ApplicationId": "[parameters('app1Name')]",
-            "Request_Source": "IbizaWebAppExtensionCreate"
-        }
+      "type": "microsoft.insights/components",
+      "name": "app1secure",
+      "apiVersion": "2015-05-01",
+      "location": "West Europe",
+      "properties": {
+        "ApplicationId": "[parameters('app1Name')]",
+        "Request_Source": "IbizaWebAppExtensionCreate"
+      }
     },
     {
       "type": "microsoft.insights/components",
@@ -220,8 +231,8 @@
       "apiVersion": "2015-05-01",
       "location": "West Europe",
       "properties": {
-          "ApplicationId": "[parameters('app2Name')]",
-          "Request_Source": "IbizaWebAppExtensionCreate"
+        "ApplicationId": "[parameters('app2Name')]",
+        "Request_Source": "IbizaWebAppExtensionCreate"
       }
     },
     {
@@ -241,8 +252,41 @@
             "properties": {
               "addressPrefix": "[parameters('subnetPrefix')]"
             }
+          },
+          {
+            "name": "[variables('vpnGatewaySubnetName')]",
+            "properties": {
+              "addressPrefix": "10.0.1.0/27"
+            }
           }
         ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2018-12-01",
+      "name": "[concat(variables('virtualNetworkName'), '/appGatewaySubnet')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "provisioningState": "Succeeded",
+        "addressPrefix": "10.0.0.0/28",
+        "delegations": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2018-12-01",
+      "name": "[concat(variables('virtualNetworkName'), '/GatewaySubnet')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "provisioningState": "Succeeded",
+        "addressPrefix": "10.0.1.0/27",
+        "serviceEndpoints": [],
+        "delegations": []
       }
     },
     {
@@ -364,6 +408,104 @@
             }
           }
         ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2018-12-01",
+      "name": "[parameters('vpngatewaypip_name')]",
+      "location": "westeurope",
+      "sku": {
+        "name": "Basic",
+        "tier": "Regional"
+      },
+      "properties": {
+        "provisioningState": "Succeeded",
+        "resourceGuid": "e9af456f-e4b9-4439-8cf8-d4e0158f01e4",
+        "ipAddress": "40.68.201.170",
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "ipTags": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2018-12-01",
+      "name": "[parameters('publicIPAddresses_vpngatewaypip_name')]",
+      "location": "westeurope",
+      "sku": {
+          "name": "Basic",
+          "tier": "Regional"
+      },
+      "properties": {
+          "provisioningState": "Succeeded",
+          "resourceGuid": "e9af456f-e4b9-4439-8cf8-d4e0158f01e4",
+          "ipAddress": "40.68.201.170",
+          "publicIPAddressVersion": "IPv4",
+          "publicIPAllocationMethod": "Dynamic",
+          "idleTimeoutInMinutes": 4,
+          "ipTags": []
+      }
+  },
+    {
+      "type": "Microsoft.Network/virtualNetworkGateways",
+      "apiVersion": "2018-12-01",
+      "name": "[variables('virtualNetworkGateways_secureappgateway_name')]",
+      "location": "westeurope",
+      "properties": {
+        "resourceGuid": "fb5aa22c-32a5-4893-9763-48452dcaf076",
+        "ipConfigurations": [
+          {
+            "name": "default",
+            "etag": "W/\"3035e4eb-f347-40e6-aaf3-9393046b0340\"",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[variables('publicIPAddresses_vpngatewaypip_externalid')]"
+              },
+              "subnet": {
+                "id": "[concat(variables('virtualNetworks_virtualNetwork1_externalid'), '/subnets/GatewaySubnet')]"
+              }
+            }
+          }
+        ],
+        "sku": {
+          "name": "VpnGw1",
+          "tier": "VpnGw1",
+          "capacity": 2
+        },
+        "gatewayType": "Vpn",
+        "vpnType": "RouteBased",
+        "enableBgp": false,
+        "activeActive": false,
+        "vpnClientConfiguration": {
+          "vpnClientAddressPool": {
+            "addressPrefixes": [
+              "172.16.1.0/24"
+            ]
+          },
+          "vpnClientProtocols": [
+            "SSTP",
+            "IkeV2"
+          ],
+          "vpnClientRootCertificates": [
+            {
+              "name": "AppServiceCertificate.cer",
+              "etag": "W/\"3035e4eb-f347-40e6-aaf3-9393046b0340\"",
+              "properties": {
+                "publicCertData": "MIIDPjCCAiqgAwIBAgIQWjTFX6PPbJ1FeVSNL/WmSjAJBgUrDgMCHQUAMC0xKzApBgNVBAMTIldlYnNpdGVzQ2VydGlmaWNhdGV2aXJ0dWFsTmV0d29yazEwHhcNMTkwNTI2MTMzNTI3WhcNMzkxMjMxMjM1OTU5WjAtMSswKQYDVQQDEyJXZWJzaXRlc0NlcnRpZmljYXRldmlydHVhbE5ldHdvcmsxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs5pvJxCuVXOHCUKttDCsmyceCki+o9487lfoB2zTUtq9f6LJ3sIGbdm57Iu13HwQlOX61D4uNv3bkHg9ac2QOOdcGxzJV3tmc2GiU7e2SU/E3rKlfkRczlj4dn4bgl3p3HNjQNnZ67GWRHZGBD1kBpRgP1vOzbEsnbRL6lz1u4var/Jlm5DOZxtRU/e9ENXcw9AXLuB7bGwJ/UcWtz8x3rfM5ts66TY3o6c5LuSrnMmAMsIQ1kogDP7i7dssuQCM986thTY2+nN/9lHoegHAEqWFXUQKKbhrTG7+pLQqCANjffA6k5UkPPUN2XuWjqEstchasCdfhO1jz/3R0xdj+wIDAQABo2IwYDBeBgNVHQEEVzBVgBAyRort9uipKLLaj2StAxjBoS8wLTErMCkGA1UEAxMiV2Vic2l0ZXNDZXJ0aWZpY2F0ZXZpcnR1YWxOZXR3b3JrMYIQWjTFX6PPbJ1FeVSNL/WmSjAJBgUrDgMCHQUAA4IBAQCYfdtU6h3buhGIP74iRbwJPxnGmaNZc5ZacPemv2451QHnEZTIoLFvvQnT+5zeETLrAeLN8qFwvrHIPHuDCpZ0Pg1W+eYwdetfWGVEluX7Q19rWUuQ7Ar19wMgqqcADXEap/zNNDX7cFyEW9WTZRcrmVuPAk9/0HZOwG9P0bahUrblS8hBbpPl2KMzFaAScLFJqGvzhMGb555KeUlvVfHwlHyebUcb+xGtJ9x2kXMchKM6gXWaArMsFyNmWqRSxhjDn+xmYWcbsceGE+pK04ZKnALX2RFc6F5zSt8xwW+0TL/GBcYrDCtGipCgr6SP92OQSHopKFeXs8QaB7f3lGQw"
+              }
+            }
+          ],
+          "vpnClientRevokedCertificates": [],
+          "vpnClientIpsecPolicies": []
+        },
+        "bgpSettings": {
+          "asn": 65515,
+          "bgpPeeringAddress": "10.0.1.30",
+          "peerWeight": 0
+        }
       }
     }
   ]

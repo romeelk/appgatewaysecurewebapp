@@ -52,6 +52,9 @@
       },
       "subscriptionId": {
           "value": "19ad0156-1e20-4d4a-9d63-fae6c20f63bd"
-      }      
+      },
+      "vpngatewaypip_name": {
+
+      }     
     }
   }
