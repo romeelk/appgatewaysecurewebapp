@@ -84,8 +84,8 @@
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',variables('applicationGatewayName'))]",
-    "webAppTemplatelink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps.json",
-    "webAppTemplateParameterlink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webappsparameters.json"
+    "webAppTemplatelink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps/webapps.json",
+    "webAppTemplateParameterlink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps/webappsparameters.json"
 
   },
   "resources": [
