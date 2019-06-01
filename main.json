@@ -84,34 +84,6 @@
       "metadata": {
         "description": "Location for all resources."
       }
-    },
-    "hostingPlanName": {
-      "type": "string"
-    },
-    "hostingEnvironment": {
-      "type": "string"
-    },
-    "sku": {
-      "type": "string"
-    },
-    "skuCode": {
-      "type": "string"
-    },
-    "workerSize": {
-      "type": "string"
-    },
-    "serverFarmResourceGroup": {
-      "type": "string"
-    },
-    "subscriptionId": {
-      "type": "string"
-    },
-    "vpngatewaypip_name": {
-      "type": "string"
-    },
-    "publicIPAddresses_vpngatewaypip_name": {
-      "defaultValue": "vpngatewaypip",
-      "type": "String"
     }
   },
   "variables": {
@@ -124,6 +96,9 @@
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',variables('applicationGatewayName'))]",
+    "webAppTemplatelink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps.json",
+    "webAppTemplateParameterlink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webappsparameters.json"
+  
   },
   "resources": [
     {
@@ -136,101 +111,19 @@
       }
     },
     {
-      "type": "Microsoft.Web/serverfarms",
-      "sku": {
-        "Tier": "[parameters('sku')]",
-        "Name": "[parameters('skuCode')]"
-      },
-      "name": "[parameters('hostingPlanName')]",
-      "apiVersion": "2016-09-01",
-      "location": "[parameters('location')]",
+    "apiVersion": "2015-01-01",
+      "name": "nestedTemplate",
+      "type": "Microsoft.Resources/deployments",
       "properties": {
-        "name": "[parameters('hostingPlanName')]",
-        "workerSizeId": "[parameters('workerSize')]",
-        "numberOfWorkers": "1",
-        "hostingEnvironment": "[parameters('hostingEnvironment')]"
-      }
-    },
-    {
-      "type": "Microsoft.Web/sites",
-      "name": "[parameters('app1Name')]",
-      "apiVersion": "2016-03-01",
-      "location": "[parameters('location')]",
-      "properties": {
-        "siteConfig": {
-          "appSettings": [
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference('microsoft.insights/components/app1secure', '2015-05-01').InstrumentationKey]"
-            },
-            {
-              "name": "XDT_MicrosoftApplicationInsights_Mode",
-              "value": "default"
-            },
-            {
-              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-              "value": "~2"
-            }
-          ]
-        },
-        "name": "[parameters('app1Name')]",
-        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-        "hostingEnvironment": "[parameters('hostingEnvironment')]"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-        "[concat('microsoft.insights/components/', parameters('app1Name'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Web/sites",
-      "name": "[parameters('app2Name')]",
-      "apiVersion": "2016-03-01",
-      "location": "[parameters('location')]",
-      "properties": {
-        "siteConfig": {
-          "appSettings": [
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference('microsoft.insights/components/app2secure', '2015-05-01').InstrumentationKey]"
-            },
-            {
-              "name": "XDT_MicrosoftApplicationInsights_Mode",
-              "value": "default"
-            },
-            {
-              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-              "value": "~2"
-            }
-          ]
-        },
-        "name": "[parameters('app2Name')]",
-        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-        "hostingEnvironment": "[parameters('hostingEnvironment')]"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-        "[concat('microsoft.insights/components/', parameters('app2Name'))]"
-      ]
-    },
-    {
-      "type": "microsoft.insights/components",
-      "name": "app1secure",
-      "apiVersion": "2015-05-01",
-      "location": "West Europe",
-      "properties": {
-        "ApplicationId": "[parameters('app1Name')]",
-        "Request_Source": "IbizaWebAppExtensionCreate"
-      }
-    },
-    {
-      "type": "microsoft.insights/components",
-      "name": "app2secure",
-      "apiVersion": "2015-05-01",
-      "location": "West Europe",
-      "properties": {
-        "ApplicationId": "[parameters('app2Name')]",
-        "Request_Source": "IbizaWebAppExtensionCreate"
+          "mode": "incremental",
+          "templateLink": {
+              "uri": "[variables('webAppTemplatelink')]",
+              "contentVersion": "1.0.0.0"
+          },
+          "parametersLink": {
+            "uri":"[variables('webAppTemplateParameterlink')]",
+            "contentVersion":"1.0.0.0"
+        }
       }
     },
     {
