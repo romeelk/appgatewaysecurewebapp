@@ -1,33 +1,54 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "addressPrefix": {
-        "value": "10.0.0.0/16"
-      },
-      "subnetPrefix": {
-        "value": "10.0.0.0/28"
-      },
-      "applicationGatewaySize": {
-        "value": "Standard_Medium"
-      },
-      "capacity": {
-        "value": 2
-      },
-      "azureWebApp1": {
-        "value": "app1secure.azurewebsites.net"
-      },
-      "azureWebApp2": {
-        "value": "app2secure.azurewebsites.net"
-      },
-      "probeEnabled": {
-        "value": true
-      }
-      // "serverFarmResourceGroup": {
-      //     "value": "appgateway-webapp-rg"
-      // },
-      // "subscriptionId": {
-      //     "value": "19ad0156-1e20-4d4a-9d63-fae6c20f63bd"
-      // }   
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "addressPrefix": {
+      "value": "10.0.0.0/16"
+    },
+    "subnetPrefix": {
+      "value": "10.0.0.0/28"
+    },
+    "applicationGatewaySize": {
+      "value": "Standard_Medium"
+    },
+    "capacity": {
+      "value": 2
+    },
+    "azureWebApp1": {
+      "value": "app1secure.azurewebsites.net"
+    },
+    "azureWebApp2": {
+      "value": "app2secure.azurewebsites.net"
+    },
+    "probeEnabled": {
+      "value": true
+    },
+    "applicationGatewayName": {
+      "value": "secureweb-agw"
+    },
+    "tier": {
+      "value": "Standard"
+    },
+    "skuSize": {
+      "value": "Standard_Medium"
+    },
+    "gatewayCapacity": {
+      "value": 2
+    },
+    "autoScaleMaxCapacity": {
+      "value": 10
+    },
+    "frontEndPort": {
+      "value": 80
+    },
+    "subnetName": {
+      "value": "appGatewaySubnet"
+    },
+    "enableHttp2": {
+      "value": false
+    },
+    "zones": {
+      "value": []
     }
   }
+}

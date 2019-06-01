@@ -72,20 +72,49 @@
       "metadata": {
         "description": "Location for all resources."
       }
+    },
+    "applicationGatewayName": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string"
+    },
+    "skuSize": {
+      "type": "string"
+    },
+    "gatewayCapacity": {
+      "type": "int",
+      "defaultValue": 2
+    },
+    "autoScaleMaxCapacity": {
+      "type": "int",
+      "defaultValue": 10
+    },
+    "frontEndPort": {
+      "type": "int"
+    },
+    "subnetName": {
+      "type": "string"
+    },
+    "enableHttp2": {
+      "type": "bool"
+    },
+    "zones": {
+      "type": "array"
     }
   },
   "variables": {
     "serviceName": "secureweb",
-    "applicationGatewayName": "[concat(variables('serviceName'), '-agw')]",
     "publicIPAddressName": "[concat(variables('serviceName'), '-agw-pip')]",
     "virtualNetworkName": "[concat(variables('serviceName'), '-agw-vnet')]",
     "subnetName": "appGatewaySubnet",
     "vpnGatewaySubnetName": "GatewaySubnet",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
-    "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',variables('applicationGatewayName'))]",
+    "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',parameters('applicationGatewayName'))]",
     "webAppTemplatelink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps/webapps.json",
-    "webAppTemplateParameterlink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps/webappsparameters.json"
+    "webAppTemplateParameterlink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps/webappsparameters.json",
+    
 
   },
   "resources": [
@@ -99,18 +128,18 @@
       }
     },
     {
-    "apiVersion": "2015-01-01",
+      "apiVersion": "2015-01-01",
       "name": "nestedTemplate",
       "type": "Microsoft.Resources/deployments",
       "properties": {
-          "mode": "incremental",
-          "templateLink": {
-              "uri": "[variables('webAppTemplatelink')]",
-              "contentVersion": "1.0.0.0"
-          },
-          "parametersLink": {
-            "uri":"[variables('webAppTemplateParameterlink')]",
-            "contentVersion":"1.0.0.0"
+        "mode": "incremental",
+        "templateLink": {
+          "uri": "[variables('webAppTemplatelink')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": {
+          "uri": "[variables('webAppTemplateParameterlink')]",
+          "contentVersion": "1.0.0.0"
         }
       }
     },
@@ -164,6 +193,101 @@
         "addressPrefix": "10.0.1.0/27",
         "serviceEndpoints": [],
         "delegations": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/applicationGateways",
+      "apiVersion": "2019-02-01",
+      "name": "[parameters('applicationGatewayName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [],
+      "zones": "[parameters('zones')]",
+      "properties": {
+        "sku": {
+          "name": "[parameters('skuSize')]",
+          "tier": "[parameters('tier')]",
+          "capacity": "[parameters('capacity')]"
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "appGatewayIpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ],
+        "frontendIPConfigurations": [
+          {
+            "name": "appGatewayFrontendIP",
+            "properties": {
+              "PublicIPAddress": {
+                "id": "[variables('publicIPRef')]"
+              }
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "appGatewayFrontendPort",
+            "properties": {
+              "Port": 80
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "appGatewayBackendPool",
+            "properties": {
+              "BackendAddresses": []
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "appGatewayBackendHttpSettings",
+            "properties": {
+              "Port": 80,
+              "Protocol": "Http",
+              "CookieBasedAffinity": "Disabled"
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "appGatewayHttpListener",
+            "properties": {
+              "FrontendIPConfiguration": {
+                "Id": "[concat(variables('applicationGatewayID'), '/frontendIPConfigurations/appGatewayFrontendIP')]"
+              },
+              "FrontendPort": {
+                "Id": "[concat(variables('applicationGatewayID'), '/frontendPorts/appGatewayFrontendPort')]"
+              },
+              "Protocol": "Http",
+              "SslCertificate": null
+            }
+          }
+        ],
+        "requestRoutingRules": [
+          {
+            "Name": "rule1",
+            "properties": {
+              "RuleType": "Basic",
+              "httpListener": {
+                "id": "[concat(variables('applicationGatewayID'), '/httpListeners/appGatewayHttpListener')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(variables('applicationGatewayID'), '/backendAddressPools/appGatewayBackendPool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[concat(variables('applicationGatewayID'), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
+              }
+            }
+          }
+        ],
+        "enableHttp2": "[parameters('enableHttp2')]",
+        "sslCertificates": []
       }
     }
   ]
