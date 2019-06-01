@@ -1,0 +1,289 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "addressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/16",
+      "metadata": {
+        "description": "Address prefix for the Virtual Network"
+      }
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/28",
+      "metadata": {
+        "description": "Subnet prefix"
+      }
+    },
+    "applicationGatewaySize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_Small",
+        "Standard_Medium",
+        "Standard_Large"
+      ],
+      "defaultValue": "Standard_Medium",
+      "metadata": {
+        "description": "application gateway size"
+      }
+    },
+    "capacity": {
+      "type": "int",
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of instances"
+      }
+    },
+    "azureWebapp1": {
+      "type": "string",
+      "metadata": {
+        "description": "URL of Azure Web App 1"
+      }
+    },
+    "azureWebapp2": {
+      "type": "string",
+      "metadata": {
+        "description": "URL of Azure Web App 2"
+      }
+    },
+    "app1Name": {
+      "type": "string",
+      "metadata": {
+        "description": "App 1 name"
+      }
+    },
+    "app2Name": {
+      "type": "string",
+      "metadata": {
+        "description": "App 2 name"
+      }
+    },
+    "probeEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Probe Enabled"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "hostingPlanName": {
+      "type": "string"
+    },
+    "hostingEnvironment": {
+      "type": "string"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "skuCode": {
+      "type": "string"
+    },
+    "workerSize": {
+      "type": "string"
+    },
+    "serverFarmResourceGroup": {
+      "type": "string"
+    },
+    "subscriptionId": {
+      "type": "string"
+    },
+    "vpngatewaypip_name": {
+      "type": "string"
+    },
+    "publicIPAddresses_vpngatewaypip_name": {
+      "defaultValue": "vpngatewaypip",
+      "type": "String"
+    }
+  },
+  "variables": {
+    "serviceName": "secureweb",
+    "applicationGatewayName": "[concat(variables('serviceName'), '-agw')]",
+    "publicIPAddressName": "[concat(variables('serviceName'), '-agw-pip')]",
+    "virtualNetworkName": "[concat(variables('serviceName'), '-agw-vnet')]",
+    "subnetName": "appGatewaySubnet",
+    "vpnGatewaySubnetName": "GatewaySubnet",
+    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+    "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
+    "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',variables('applicationGatewayName'))]",
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-06-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "Tier": "[parameters('sku')]",
+        "Name": "[parameters('skuCode')]"
+      },
+      "name": "[parameters('hostingPlanName')]",
+      "apiVersion": "2016-09-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "name": "[parameters('hostingPlanName')]",
+        "workerSizeId": "[parameters('workerSize')]",
+        "numberOfWorkers": "1",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "name": "[parameters('app1Name')]",
+      "apiVersion": "2016-03-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference('microsoft.insights/components/app1secure', '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_Mode",
+              "value": "default"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "~2"
+            }
+          ]
+        },
+        "name": "[parameters('app1Name')]",
+        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "[concat('microsoft.insights/components/', parameters('app1Name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "name": "[parameters('app2Name')]",
+      "apiVersion": "2016-03-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference('microsoft.insights/components/app2secure', '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_Mode",
+              "value": "default"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "~2"
+            }
+          ]
+        },
+        "name": "[parameters('app2Name')]",
+        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "[concat('microsoft.insights/components/', parameters('app2Name'))]"
+      ]
+    },
+    {
+      "type": "microsoft.insights/components",
+      "name": "app1secure",
+      "apiVersion": "2015-05-01",
+      "location": "West Europe",
+      "properties": {
+        "ApplicationId": "[parameters('app1Name')]",
+        "Request_Source": "IbizaWebAppExtensionCreate"
+      }
+    },
+    {
+      "type": "microsoft.insights/components",
+      "name": "app2secure",
+      "apiVersion": "2015-05-01",
+      "location": "West Europe",
+      "properties": {
+        "ApplicationId": "[parameters('app2Name')]",
+        "Request_Source": "IbizaWebAppExtensionCreate"
+      }
+    },
+    {
+      "apiVersion": "2017-06-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('vpnGatewaySubnetName')]",
+            "properties": {
+              "addressPrefix": "10.0.1.0/27"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2018-12-01",
+      "name": "[concat(variables('virtualNetworkName'), '/appGatewaySubnet')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "addressPrefix": "10.0.0.0/28",
+        "delegations": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2018-12-01",
+      "name": "[concat(variables('virtualNetworkName'), '/GatewaySubnet')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "addressPrefix": "10.0.1.0/27",
+        "serviceEndpoints": [],
+        "delegations": []
+      }
+    }
+  ]
+}
