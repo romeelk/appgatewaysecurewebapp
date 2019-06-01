@@ -2,6 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "app1Name": {
+            "value": "app1secure"
+        },
+        "app2Name": {
+            "value": "app2secure"
+        },
         "hostingPlanName": {
             "value": "secureappplan"
         },
@@ -25,12 +31,6 @@
         },
         "subscriptionId": {
             "value": "19ad0156-1e20-4d4a-9d63-fae6c20f63bd"
-        },
-        "app1Name": {
-            "value": "app1secure"
-        },
-        "app2Name": {
-            "value": "app2secure"
         }
     }
 }
