@@ -114,8 +114,6 @@
     "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',parameters('applicationGatewayName'))]",
     "webAppTemplatelink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps/webapps.json",
     "webAppTemplateParameterlink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps/webappsparameters.json",
-    
-
   },
   "resources": [
     {
@@ -242,6 +240,26 @@
             "properties": {
               "BackendAddresses": []
             }
+          },
+          {
+            "name": "appServiceBackendPool",
+            "id": "[concat(variables('applicationGatewayID'),'/backendAddressPools/appServiceBackendPool')]",
+            "properties": {
+              "backendAddresses": [
+                {
+                  "fqdn": "app2secure.azurewebsites.net"
+                },
+                {
+                  "fqdn": "app1secure.azurewebsites.net"
+                }
+              ],
+              "requestRoutingRules": [
+                {
+                  "id": "[concat(variables('applicationGatewayID'),'/requestRoutingRules/rule1')]"
+                }
+              ]
+            },
+            "type": "Microsoft.Network/applicationGateways/backendAddressPools"
           }
         ],
         "backendHttpSettingsCollection": [
@@ -252,6 +270,27 @@
               "Protocol": "Http",
               "CookieBasedAffinity": "Disabled"
             }
+          },
+          {
+            "name": "appServiceHttpSettings",
+            "properties": {
+              "port": 80,
+              "protocol": "Http",
+              "cookieBasedAffinity": "Disabled",
+              "pickHostNameFromBackendAddress": true,
+              "affinityCookieName": "ApplicationGatewayAffinity",
+              "path": null,
+              "requestTimeout": 20,
+              "probe": {
+                "id": "[concat(variables('applicationGatewayID'),'/probes/appServiceHttpSettingse218fac0-e950-4180-97c4-d22a6a7b1004')]"
+              },
+              "requestRoutingRules": [
+                {
+                  "id": "[concat(variables('applicationGatewayID'),'/requestRoutingRules/rule1')]"
+                }
+              ]
+            },
+            "type": "Microsoft.Network/applicationGateways/backendHttpSettingsCollection"
           }
         ],
         "httpListeners": [
@@ -262,7 +301,16 @@
                 "Id": "[concat(variables('applicationGatewayID'), '/frontendIPConfigurations/appGatewayFrontendIP')]"
               },
               "FrontendPort": {
-                "Id": "[concat(variables('applicationGatewayID'), '/frontendPorts/appGatewayFrontendPort')]"
+                "Id": "[concat(variables('applicationGatewayID'), '/frontendPorts/appGatewayFrontendPort')]",
+                "properties": {
+                  "provisioningState": "Succeeded",
+                  "port": 80,
+                  "httpListeners": [
+                    {
+                      "id": "[concat(variables('applicationGatewayID'),'/httpListeners/appGatewayHttpListener')]"
+                    }
+                  ]
+                }
               },
               "Protocol": "Http",
               "SslCertificate": null
@@ -278,12 +326,40 @@
                 "id": "[concat(variables('applicationGatewayID'), '/httpListeners/appGatewayHttpListener')]"
               },
               "backendAddressPool": {
-                "id": "[concat(variables('applicationGatewayID'), '/backendAddressPools/appGatewayBackendPool')]"
+                "id": "[concat(variables('applicationGatewayID'), '/backendAddressPools/appServiceBackendPool')]"
               },
               "backendHttpSettings": {
-                "id": "[concat(variables('applicationGatewayID'), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
+                "id": "[concat(variables('applicationGatewayID'), '/backendHttpSettingsCollection/appServiceHttpSettings')]"
               }
             }
+          }
+        ],
+        "probes": [
+          {
+            "name": "appServiceHttpSettingse218fac0-e950-4180-97c4-d22a6a7b1004",
+            "id": "[concat(variables('applicationGatewayID'),'/probes/appServiceHttpSettingse218fac0-e950-4180-97c4-d22a6a7b1004')]",
+            "properties": {
+              "provisioningState": "Succeeded",
+              "protocol": "Http",
+              "path": "/",
+              "interval": 30,
+              "timeout": 30,
+              "unhealthyThreshold": 3,
+              "pickHostNameFromBackendHttpSettings": true,
+              "minServers": 0,
+              "match": {
+                "body": "",
+                "statusCodes": [
+                  "200-399"
+                ]
+              },
+              "backendHttpSettings": [
+                {
+                  "id": "[concat(variables('applicationGatewayID'),'/backendHttpSettingsCollection/appServiceHttpSettings')]"
+                }
+              ]
+            },
+            "type": "Microsoft.Network/applicationGateways/probes"
           }
         ],
         "enableHttp2": "[parameters('enableHttp2')]",
