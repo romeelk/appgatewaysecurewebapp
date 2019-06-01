@@ -59,18 +59,6 @@
         "description": "URL of Azure Web App 2"
       }
     },
-    "app1Name": {
-      "type": "string",
-      "metadata": {
-        "description": "App 1 name"
-      }
-    },
-    "app2Name": {
-      "type": "string",
-      "metadata": {
-        "description": "App 2 name"
-      }
-    },
     "probeEnabled": {
       "type": "bool",
       "defaultValue": true,
@@ -98,7 +86,7 @@
     "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways',variables('applicationGatewayName'))]",
     "webAppTemplatelink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webapps.json",
     "webAppTemplateParameterlink": "https://raw.githubusercontent.com/romeelk/appgatewaysecurewebapp/master/webappsparameters.json"
-  
+
   },
   "resources": [
     {

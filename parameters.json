@@ -14,12 +14,6 @@
       "capacity": {
         "value": 2
       },
-      "app1Name":{
-        "value":"app1secure"
-      },
-      "app2Name":{
-        "value":"app2secure"
-      },
       "azureWebApp1": {
         "value": "app1secure.azurewebsites.net"
       },
@@ -28,33 +22,12 @@
       },
       "probeEnabled": {
         "value": true
-      },
-      "hostingPlanName": {
-        "value": "secureappplan"
-      },
-      "hostingEnvironment": {
-          "value": ""
-      },
-      "location": {
-          "value": "West Europe"
-      },
-      "sku": {
-          "value": "Standard"
-      },
-      "skuCode": {
-          "value": "S1"
-      },
-      "workerSize": {
-          "value": "0"
-      },
-      "serverFarmResourceGroup": {
-          "value": "appgateway-webapp-rg"
-      },
-      "subscriptionId": {
-          "value": "19ad0156-1e20-4d4a-9d63-fae6c20f63bd"
-      },
-      "vpngatewaypip_name": {
-        "value": "vpngateway-pip"
-      }     
+      }
+      // "serverFarmResourceGroup": {
+      //     "value": "appgateway-webapp-rg"
+      // },
+      // "subscriptionId": {
+      //     "value": "19ad0156-1e20-4d4a-9d63-fae6c20f63bd"
+      // }   
     }
   }
